@@ -11,7 +11,10 @@
   <script type="systemjs-importmap">
     {
       "imports": {
-        "single-spa": "https://cdn.jsdelivr.net/npm/single-spa@5.9.0/lib/system/single-spa.min.js"
+        "single-spa": "https://cdn.jsdelivr.net/npm/single-spa@5.9.0/lib/system/single-spa.min.js",
+        "react":"https://cdn.bootcdn.net/ajax/libs/react/17.0.2/umd/react.production.min.js",
+        "react-dom":"https://cdn.bootcdn.net/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js",
+        "react-router-dom":"https://cdn.bootcdn.net/ajax/libs/react-router-dom/5.2.0/react-router-dom.min.js"
       }
     }
   </script>
@@ -21,7 +24,8 @@
     {
       "imports": {
         "@wumo/root-config": "//localhost:9000/wumo-root-config.js",
-        "@wumo/vue": "//localhost:3000/js/app.js"
+        "@wumo/vue": "//localhost:3000/js/app.js",
+        "@wumo/react": "//localhost:4000/wumo-react.js"
       }
     }
   </script>

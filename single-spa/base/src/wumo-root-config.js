@@ -19,7 +19,18 @@ registerApplication({
   activeWhen: ['/vue'],
   // 传递数据
   customProps: {
-    name: 'wyb'
+    age: 18
+  }
+})
+
+// 注册 react
+registerApplication({
+  name: '@wumo/react',
+  app: () => System.import('@wumo/react'),
+  activeWhen: ['/react'],
+  // 传递数据
+  customProps: {
+    age: 18
   }
 })
 
