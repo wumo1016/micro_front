@@ -1,0 +1,68 @@
+<!--
+ * @Description: 快照沙箱
+ * @Author: wyb
+ * @LastEditors: wyb
+ * @LastEditTime: 2022-04-28 21:34:59
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    class SnapshotSandbox {
+      constructor() {
+        this.proxy = window
+        this.modifyPropsMap = {} // 记录在window上修改的属性
+        this.windowSnapshot = {} // window快照
+        this.active()
+      }
+
+      active() {
+        // 保存快照
+        for (const key in window) {
+          if (window.hasOwnProperty(key)) {
+            this.windowSnapshot[key] = window[key]
+          }
+        }
+        // 应用上次的修改
+        Object.keys(this.modifyPropsMap).map(key => {
+          window[key] = this.modifyPropsMap[key]
+        })
+        // 清空差异
+        this.modifyPropsMap = {}
+      }
+
+      inactive() {
+        // 保存差异
+        for (const key in window) {
+          if (window.hasOwnProperty(key) && window[key] !== this.windowSnapshot[key]) {
+            this.modifyPropsMap[key] = window[key]
+            window[key] = this.windowSnapshot[key] // 还原快照
+          }
+        }
+        // 清空快照
+        this.windowSnapshot = {}
+      }
+    }
+
+    const sandbox = new SnapshotSandbox();
+    ((window) => {
+      window.a = '1'
+      window.b = '2'
+      console.log(window.a, window.b);
+      sandbox.inactive()
+      console.log(window.a, window.b);
+      sandbox.active()
+      console.log(window.a, window.b);
+    })(sandbox.proxy)
+  </script>
+</body>
+
+</html>
