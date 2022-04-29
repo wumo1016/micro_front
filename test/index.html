@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+    class SnapshotSandbox {
+      constructor() {
+        this.proxy = window
+        this.modifyPropsMap = {}
+        this.windowSnapshot = {}
+      }
+
+      active() {
+        this.windowSnapshot = {}
+        // 保存快照
+        for (const key in window) {
+          if (window.hasOwnProperty(key)) {
+            this.windowSnapshot[key] = window[key]
+          }
+        }
+        // 使用上次的差异
+        Object.keys(this.modifyPropsMap).map(key => {
+          window[key] = this.modifyPropsMap[key]
+        })
+      }
+
+      inactive() {
+        this.modifyPropsMap = {}
+        // 还原并保存差异
+        for (const key in window) {
+          if (window.hasOwnProperty(key) && window[key] !== this.windowSnapshot[key]) {
+            this.modifyPropsMap[key] = window[key]
+            window[key] = this.windowSnapshot[key]
+          }
+        }
+      }
+    }
+    const snapshotSandbox = new SnapshotSandbox();
+
+    ((window) => {
+      snapshotSandbox.active()
+      window.a = '1'
+      window.b = '2'
+      console.log(window.a, window.b);
+      snapshotSandbox.inactive()
+      console.log(window.a, window.b);
+      snapshotSandbox.active()
+      console.log(window.a, window.b);
+    })(snapshotSandbox.proxy)
+
+  </script>
+
+</body>
+
+</html>
