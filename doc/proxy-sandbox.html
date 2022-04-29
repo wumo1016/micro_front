@@ -1,0 +1,71 @@
+<!--
+ * @Description: 代理沙箱(多例沙箱) - https://juejin.cn/post/6920110573418086413#heading-11
+ * @Author: wyb
+ * @LastEditors: wyb
+ * @LastEditTime: 2022-04-29 15:56:57
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+
+    class ProxySandbox {
+      constructor() {
+        const rawWindow = window
+        const fakeWindow = {}
+        const proxy = new Proxy(fakeWindow, {
+          get: (target, prop) => {
+            return prop in target ? target[prop] : rawWindow[prop]
+          },
+          set: (target, prop, value) => {
+            if (this.sandboxRunning) {
+              target[prop] = value
+              return true
+            }
+          }
+        })
+        this.proxy = proxy
+      }
+
+      active() {
+        this.sandboxRunning = true
+      }
+
+      inactive() {
+        this.sandboxRunning = false
+      }
+    }
+
+    const proxySandbox1 = new ProxySandbox();
+    const proxySandbox2 = new ProxySandbox();
+
+    const proxy1 = 
+
+    ((window) => {
+      proxySandbox1.active()
+      window.a = '1'
+      window.b = '2'
+      console.log(window.a, window.b);
+    })(proxySandbox1.proxy);
+
+    ((window) => {
+      proxySandbox2.active()
+      window.a = '3'
+      window.b = '4'
+      console.log(window.a, window.b);
+    })(proxySandbox2.proxy)
+
+  </script>
+
+</body>
+
+</html>
