@@ -43,7 +43,7 @@ registerMicroApps(
 
 start({
   sandbox: {
-    // experimentalStyleIsolation: true,
-    strictStyleIsolation: true
+    // experimentalStyleIsolation: true, // 开启样式隔离 加载前缀
+    strictStyleIsolation: true // 开启shadowDOM
   }
 })
