@@ -17,6 +17,7 @@
     "webpack-dev-server": "^4.8.1"
   },
   "dependencies": {
-    "is-array": "^1.0.1"
+    "is-array": "^1.0.1",
+    "redux": "^4.2.0"
   }
 }

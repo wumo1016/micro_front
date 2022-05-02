@@ -21,7 +21,8 @@ module.exports = {
       // 作为容器向外暴露的模块或组件 key就是别名
       exposes: {
         './dropdown': './src/dropdown.js',
-        './button': './src/button.js'
+        './button': './src/button.js',
+        './store': './src/store.js'
       },
       shared: ['is-array'] // 容器和组件共享的模块
     })
