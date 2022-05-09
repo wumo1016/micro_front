@@ -2,7 +2,7 @@
  * @Description: 代理沙箱(多例沙箱) - https://juejin.cn/post/6920110573418086413#heading-11
  * @Author: wyb
  * @LastEditors: wyb
- * @LastEditTime: 2022-04-29 15:56:57
+ * @LastEditTime: 2022-05-09 13:23:20
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -35,30 +35,18 @@
         })
         this.proxy = proxy
       }
-
-      active() {
-        this.sandboxRunning = true
-      }
-
-      inactive() {
-        this.sandboxRunning = false
-      }
     }
 
     const proxySandbox1 = new ProxySandbox();
     const proxySandbox2 = new ProxySandbox();
 
-    const proxy1 = 
-
     ((window) => {
-      proxySandbox1.active()
       window.a = '1'
       window.b = '2'
       console.log(window.a, window.b);
     })(proxySandbox1.proxy);
 
     ((window) => {
-      proxySandbox2.active()
       window.a = '3'
       window.b = '4'
       console.log(window.a, window.b);
