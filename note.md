@@ -22,6 +22,9 @@
 
 - 快照沙箱: 前后比对 保存差别 (多个应用无法使用)
 - 代理沙箱: 使用 Proxy
+- 特殊处理
+  - 处理 `setInterval` + `clearInterval`
+  - 处理 `addEventListener` + `removeEventListener`
 
 ## single-spa
 
