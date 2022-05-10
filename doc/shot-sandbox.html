@@ -2,7 +2,7 @@
  * @Description: 快照沙箱
  * @Author: wyb
  * @LastEditors: wyb
- * @LastEditTime: 2022-04-28 21:34:59
+ * @LastEditTime: 2022-05-10 10:02:55
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +25,7 @@
       }
 
       active() {
+        this.free = patchIntervals(window)
         // 保存快照
         for (const key in window) {
           if (window.hasOwnProperty(key)) {
@@ -49,18 +50,48 @@
         }
         // 清空快照
         this.windowSnapshot = {}
+        this.free()
       }
+    }
+
+    const rawWindowInterval = window.setInterval;
+    const rawWindowClearInterval = window.clearInterval;
+
+    function patchIntervals(global) {
+      let intervals = [];
+
+      global.clearInterval = (intervalId) => {
+        intervals = intervals.filter((id) => id !== intervalId);
+        return rawWindowClearInterval.call(window, intervalId);
+      };
+
+      global.setInterval = (handler, timeout, ...args) => {
+        const intervalId = rawWindowInterval(handler, timeout, ...args);
+        intervals = [...intervals, intervalId];
+        return intervalId;
+      };
+
+      return function free() {
+        intervals.forEach((id) => global.clearInterval(id));
+        global.setInterval = rawWindowInterval;
+        global.clearInterval = rawWindowClearInterval;
+      };
     }
 
     const sandbox = new SnapshotSandbox();
     ((window) => {
+      setInterval(() => {
+        console.log(123456);
+      }, 500)
       window.a = '1'
       window.b = '2'
       console.log(window.a, window.b);
-      sandbox.inactive()
-      console.log(window.a, window.b);
-      sandbox.active()
-      console.log(window.a, window.b);
+      setTimeout(() => {
+        sandbox.inactive()
+        console.log(window.a, window.b);
+        sandbox.active()
+        console.log(window.a, window.b);
+      }, 1000)
     })(sandbox.proxy)
   </script>
 </body>
