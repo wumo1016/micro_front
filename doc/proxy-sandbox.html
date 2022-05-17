@@ -2,7 +2,7 @@
  * @Description: 代理沙箱(多例沙箱) - https://juejin.cn/post/6920110573418086413#heading-11
  * @Author: wyb
  * @LastEditors: wyb
- * @LastEditTime: 2022-05-09 13:23:20
+ * @LastEditTime: 2022-05-17 16:19:47
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +21,7 @@
     class ProxySandbox {
       constructor() {
         const rawWindow = window
-        const fakeWindow = {}
+        const fakeWindow = Object.create(null)
         const proxy = new Proxy(fakeWindow, {
           get: (target, prop) => {
             return prop in target ? target[prop] : rawWindow[prop]
