@@ -2,7 +2,7 @@
  * @Description: 快照沙箱
  * @Author: wyb
  * @LastEditors: wyb
- * @LastEditTime: 2022-05-10 10:02:55
+ * @LastEditTime: 2022-05-17 16:06:15
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +16,13 @@
 
 <body>
   <script>
+    const inter = (window, cb) => {
+      for (const key in window) {
+        if (window.hasOwnProperty(key)) {
+          cb(key)
+        }
+      }
+    }
     class SnapshotSandbox {
       constructor() {
         this.proxy = window
@@ -27,11 +34,9 @@
       active() {
         this.free = patchIntervals(window)
         // 保存快照
-        for (const key in window) {
-          if (window.hasOwnProperty(key)) {
-            this.windowSnapshot[key] = window[key]
-          }
-        }
+        inter(window, key => {
+          this.windowSnapshot[key] = window[key]
+        })
         // 应用上次的修改
         Object.keys(this.modifyPropsMap).map(key => {
           window[key] = this.modifyPropsMap[key]
@@ -42,12 +47,12 @@
 
       inactive() {
         // 保存差异
-        for (const key in window) {
-          if (window.hasOwnProperty(key) && window[key] !== this.windowSnapshot[key]) {
+        inter(window, key => {
+          if (window[key] !== this.windowSnapshot[key]) {
             this.modifyPropsMap[key] = window[key]
             window[key] = this.windowSnapshot[key] // 还原快照
           }
-        }
+        })
         // 清空快照
         this.windowSnapshot = {}
         this.free()
