@@ -58,4 +58,12 @@
 - 需要 webpack5
 - 没有沙箱
 
-## MicroApp
+## qiankun 问题汇总
+
+- 预加载的应用的加载时 是如何避免再次请求资源的
+  - 全局定义了一个缓存列表
+- 应用的 entry 是如何拿到的 也就是说有很多 js 文件 是如何拿到那些生命周期的
+  - 对于entry 首先会取script标签上带有 entry 属性的src 如果都没有 会取最后script的src作为 entry
+- js 沙箱如何生效的 也就是 js 是如何执行的
+  - (0, eval)('code')
+  - 就是通过 eval 的方式 然后包装一个自执行函数 将 proxy 传过去
