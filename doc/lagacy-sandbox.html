@@ -1,0 +1,84 @@
+<!--
+ * @Description: 代理沙箱(多例沙箱) - https://juejin.cn/post/6920110573418086413#heading-11
+ * @Author: wyb
+ * @LastEditors: wyb
+ * @LastEditTime: 2022-05-17 16:17:56
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+
+    class LegacySandbox {
+      constructor() {
+        this.addedPropsMapInSandbox = {}; // 沙箱期间新增的全局变量
+        this.modifiedPropsOriginalValueMapInSandbox = {}; // 沙箱期间更新的全局变量
+        this.currentUpdatedPropsValueMap = {}; // 持续记录更新的(新增和修改的)全局变量的 map，用于在任意时刻做 snapshot
+        const rawWindow = window;
+        const fakeWindow = Object.create(null);
+        const proxy = new Proxy(fakeWindow, {
+          set: (target, prop, value) => {
+            if (!rawWindow.hasOwnProperty(prop)) {
+              // 记录新增值
+              this.addedPropsMapInSandbox[prop] = value;
+            } else if (!this.modifiedPropsOriginalValueMapInSandbox[prop]) {
+              // 记录 window 自身属性的初始值
+              this.modifiedPropsOriginalValueMapInSandbox[prop] = rawWindow[prop];
+            }
+            // 纪录此次修改的属性
+            this.currentUpdatedPropsValueMap[prop] = value;
+            // 将设置的属性和值赋给了当前window，还是污染了全局window变量
+            rawWindow[prop] = value;
+            return true;
+          },
+          get: (target, prop) => {
+            return rawWindow[prop];
+          }
+        })
+        this.proxy = proxy;
+      }
+      active() {
+        for (const key in this.currentUpdatedPropsValueMap) {
+          window[key] = this.currentUpdatedPropsValueMap[key];
+        }
+      }
+      inactive() {
+        // 将更新值的初始值还原给window
+        for (const key in this.modifiedPropsOriginalValueMapInSandbox) {
+          window[key] = this.modifiedPropsOriginalValueMapInSandbox[key];
+        }
+        // 将新增的值删掉
+        for (const key in this.addedPropsMapInSandbox) {
+          delete window[key];
+        }
+      }
+    }
+
+    const sandbox = new LegacySandbox();
+
+    window.a = '123';
+    ((window) => {
+      sandbox.active()
+      window.a = '1'
+      window.b = '2'
+      console.log(window.a, window.b);
+      sandbox.inactive()
+      console.log(window.a, window.b);
+      sandbox.active()
+      console.log(window.a, window.b);
+    })(sandbox.proxy)
+
+  </script>
+
+</body>
+
+</html>
