@@ -1,0 +1,18 @@
+## 大致流程
+
+- start
+  - defineElement
+    - patchSetAttribute: 拦截属性 (属性变化的时候出发 attributeChangedCallback 定义 appName 和 appUrl)
+    - initialMount
+      - handleCreateApp
+        - new CreateApp
+          - loadSourceCode
+            - HTMLLoader.run
+              - fetchSource
+                - 请求 url 拿到 html
+                - 对 head 和 body 进行替换(防止自动加载资源)
+                - extractSourceDom
+                  - flatChildren
+                  - 请求 style 和 js 资源 并缓存起来
+          - onLoad
+            - mount
