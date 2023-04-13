@@ -16,3 +16,8 @@
                   - 请求 style 和 js 资源 并缓存起来
           - onLoad
             - mount
+              - cloneContainer
+              - execScripts
+                - 循环执行 runScript
+                  - new Function + with
+                - initHook

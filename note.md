@@ -60,6 +60,10 @@
 
 - 核心通过 WebComponent 实现
 - 不需要修改子应用
+- 获取到 html 将模板放到 WebComponent 中
+- css 作作用域隔离
+- js 做 proxy 沙箱
+- 兼容 qiankun 子应用
 
 ## 模块联邦
 
