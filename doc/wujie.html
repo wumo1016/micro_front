@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>基座代码</div>
+    <!-- 子应用 -->
+    <div id="container"></div>
+
+    <script>
+      const strTmpWithCss = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Document</title>
+          </head>
+          <body>
+            <div id="inner">hello vue</div>
+            <style>
+              div {
+                color: red;
+              }
+            </style>
+          </body>
+        </html>
+      `
+      const strScript = `
+        window.a = 100 // 此属性不会影响父应用
+        console.log(window.a)
+        console.log(document.querySelector('#inner'))
+      `
+      // 创建 iframe
+      function createIframe() {
+        const iframe = document.createElement('iframe')
+        iframe.src = 'about:blank'
+        iframe.style.display = 'none'
+        document.body.appendChild(iframe)
+        return iframe
+      }
+      // 创建沙箱
+      function createSandbox() {
+        const sandbox = {
+          iframe: createIframe(),
+          shadowRoot: null
+        }
+        return sandbox
+      }
+      // 插入模板
+      function injectTemplate(sandbox, template) {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = template
+        sandbox.shadowRoot.appendChild(wrapper)
+      }
+      // 执行脚本
+      function runScriptInSandbox(sandbox, script) {
+        const iframeWindow = sandbox.iframe.contentWindow
+        const scriptElement = iframeWindow.document.createElement('script')
+        const iframeHead = iframeWindow.document.querySelector('head')
+        // 脚本执行之前 有些方法用的是父应用的
+        Object.defineProperty(
+          iframeWindow.Document.prototype,
+          'querySelector',
+          {
+            get() {
+              // console.log(sandbox.shadowRoot.querySelector);
+              // return sandbox.shadowRoot.querySelector
+              return new Proxy(sandbox.shadowRoot['querySelector'], {
+                apply(target, thisArgs, args) {
+                  return thisArgs.querySelector.apply(sandbox.shadowRoot, args)
+                }
+              })
+            }
+          }
+        )
+        scriptElement.textContent = script
+        iframeHead.appendChild(scriptElement)
+      }
+      // 定义一个组件
+      function createCustomElement() {
+        class WujieApp extends HTMLElement {
+          connectedCallback() {
+            console.log('wujie-app渲染完毕')
+            // 1.创建沙箱
+            const sandbox = createSandbox()
+            // 2.创建shadowDOM
+            sandbox.shadowRoot = this.attachShadow({ mode: 'open' })
+            // 3.将html、css放入shadowDOM中
+            injectTemplate(sandbox, strTmpWithCss)
+            // 4.将js放入沙箱中执行
+            runScriptInSandbox(sandbox, strScript)
+          }
+        }
+        window.customElements.define('wujie-app', WujieApp)
+        container.appendChild(document.createElement('wujie-app'))
+      }
+
+      createCustomElement()
+    </script>
+  </body>
+</html>

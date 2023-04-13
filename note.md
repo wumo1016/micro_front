@@ -56,15 +56,6 @@
         - 全局样式会失效
 - 全局通信
 
-## micro-app
-
-- 核心通过 WebComponent 实现
-- 不需要修改子应用
-- 获取到 html 将模板放到 WebComponent 中
-- css 作作用域隔离
-- js 做 proxy 沙箱
-- 兼容 qiankun 子应用
-
 ## 模块联邦
 
 - 动机
@@ -88,3 +79,19 @@
   - 两个应用之间加载资源的地址相同即可复用
 - 组件复用
   - 将组件单独打包
+
+## micro-app
+
+- 核心通过 WebComponent 实现
+- 不需要修改子应用
+- 获取到 html 将模板放到 WebComponent 中
+- css 作作用域隔离
+- js 做 proxy 沙箱
+- 兼容 qiankun 子应用
+
+## wujie
+
+- 特点
+  - js 沙箱通过 iframe 实现
+  - css 隔离通过 WebComponent 实现
+  - 渲染采用 WebComponent
